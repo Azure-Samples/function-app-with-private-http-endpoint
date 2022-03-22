@@ -66,6 +66,6 @@ Enabling Private Endpoints on a Function App also makes the Source Control Manag
 * [Tutorial: Integrate Azure Functions with an Azure virtual network by using private endpoints](https://docs.microsoft.com/azure/azure-functions/functions-create-vnet)
 * [Integrate your app with an Azure virtual network](https://docs.microsoft.com/azure/app-service/overview-vnet-integration)
 * [Azure Functions networking options](https://docs.microsoft.com/azure/azure-functions/functions-networking-options)
+* [Configure Azure Storage firewalls and virtual networks](https://docs.microsoft.com/azure/storage/common/storage-network-security)
 * [Deployment technologies in Azure Functions](https://docs.microsoft.com/azure/azure-functions/functions-deployment-technologies)
 * [Run a self-hosted agent in Docker](https://docs.microsoft.com/azure/devops/pipelines/agents/docker?view=azure-devops)
-
