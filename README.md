@@ -1,4 +1,4 @@
-# Project Name
+# Function App With Private HTTP Endpoint
 
 (short, 1-3 sentenced, description of the project)
 
