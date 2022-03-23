@@ -47,8 +47,7 @@ module "vnet" {
   azurerm_subnet_app_service_integration_subnet_name       = "snet-${local.base_name}-appServiceInt"
   azurerm_subnet_private_endpoints_name                    = "snet-${local.base_name}-privateEndpoints"
   azurerm_subnet_app_service_integration_service_endpoints = []
-
-  azurerm_network_security_group_name = "nsg-${local.base_name}"
+  azurerm_network_security_group_name                      = "nsg-${local.base_name}"
 }
 
 module "bastion" {
