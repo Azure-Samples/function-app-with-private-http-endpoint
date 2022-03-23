@@ -61,7 +61,7 @@ variable "azurerm_function_app_app_settings" {
   description = "Collection of additional application settings used by the function app."
 }
 
-variable "azurerm_private_endpoint_storage_endpoint_subnet_id" {
+variable "azurerm_private_endpoint_sites_private_endpoint_subnet_id" {
   type        = string
   description = "The ID of the virtual network subnet from which private IP addresses will be allocated for the private endpoint."
 }
@@ -73,5 +73,5 @@ variable "azurerm_private_dns_zone_virtual_network_id" {
 
 variable "azurerm_private_endpoint_sites_name" {
   type        = string
-  description = "The name for the Azure storage account's private endpoint for the queue resource."
+  description = "The name for the Azure Function's private endpoint for the queue resource."
 }

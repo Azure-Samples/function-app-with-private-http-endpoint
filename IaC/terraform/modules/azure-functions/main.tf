@@ -69,7 +69,7 @@ resource "azurerm_private_endpoint" "sites-private-endpoint" {
   name                = var.azurerm_private_endpoint_sites_name
   resource_group_name = var.resource_group_name
   location            = var.location
-  subnet_id           = var.azurerm_private_endpoint_storage_endpoint_subnet_id
+  subnet_id           = var.azurerm_private_endpoint_sites_private_endpoint_subnet_id
 
   private_service_connection {
     name                           = "azurewebsites-private-service-connection"
