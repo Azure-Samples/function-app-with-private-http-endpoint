@@ -14,8 +14,14 @@ param httpsOnly bool = false
 @description('Set to true to cause all outbound traffic to be routed into the virtual network (traffic subjet to NSGs and UDRs). Set to false to route only private (RFC1918) traffic into the virtual network.')
 param vnetRouteAllEnabled bool = false
 
+@description('The id of the virtual network for virtual network integration.')
+param virtualNetworkId string
+
 @description('Specify the Azure Resource Manager ID of the virtual network and subnet to be joined by regional vnet integration.')
-param virtualNetworkSubnetId string
+param subnetAppServiceIntegrationId string
+
+@description('The id of the virtual network subnet to be used for private endpoints.')
+param subnetPrivateEndpointId string
 
 @description('The built-in runtime stack to be used for a Linux-based Azure Function. This value is ignore if a Windows-based Azure Function hosting plan is used. Get the full list by executing the "az webapp list-runtimes --linux" command.')
 param linuxRuntime string = 'DOTNETCORE|3.1'
@@ -43,7 +49,7 @@ resource azureFunction 'Microsoft.Web/sites@2020-12-01' = {
     httpsOnly: httpsOnly
     serverFarmId: azureFunctionPlan.id
     reserved: true
-    virtualNetworkSubnetId: virtualNetworkSubnetId
+    virtualNetworkSubnetId: subnetAppServiceIntegrationId
     siteConfig: {
       vnetRouteAllEnabled: vnetRouteAllEnabled
       functionsRuntimeScaleMonitoringEnabled: true
@@ -66,6 +72,59 @@ resource azureFunction 'Microsoft.Web/sites@2020-12-01' = {
       ftpsState: 'Disabled'
       minTlsVersion: '1.2'
     }
+  }
+}
+
+resource functionPrivateEndpoint 'Microsoft.Network/privateEndpoints@2021-02-01' = {
+  name: 'pe-${resourceBaseName}-sites'
+  location: location
+  properties: {
+    subnet: {
+      id: subnetPrivateEndpointId
+    }
+    privateLinkServiceConnections: [
+      {
+        name: 'plsc-${resourceBaseName}-sites'
+        properties: {
+          privateLinkServiceId: azureFunction.id
+          groupIds: [
+            'sites'
+          ]
+        }
+      }
+    ]
+  }
+}
+
+resource functionPrivateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
+  name: 'privatelink.azurewebsites.net'
+  location: 'global'
+}
+
+resource functionPrivateDnsZoneLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = {
+  parent: functionPrivateDnsZone
+  name: '${functionPrivateDnsZone.name}-link'
+  location: 'global'
+  properties: {
+    registrationEnabled: false
+    virtualNetwork: {
+      id: virtualNetworkId
+    }
+  }
+}
+
+resource functionPrivateDnsZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2021-02-01' = {
+  parent: functionPrivateEndpoint
+  name: 'functionPrivateDnsZoneGroup'
+  properties: {
+    privateDnsZoneConfigs: [
+      {
+        name: 'config'
+        properties: {
+          privateDnsZoneId: functionPrivateDnsZone.id
+        }
+      }
+    ]
   }
 }
 

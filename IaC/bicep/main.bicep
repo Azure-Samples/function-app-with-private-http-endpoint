@@ -103,7 +103,9 @@ module azureFunction './modules/azure-functions.bicep' = {
   name: 'azureFunctionsDeploy'
   params: {
     location: location
-    virtualNetworkSubnetId: network.outputs.subnetAppServiceIntId
+    virtualNetworkId: network.outputs.virtualNetworkId
+    subnetAppServiceIntegrationId: network.outputs.subnetAppServiceIntId
+    subnetPrivateEndpointId: network.outputs.subnetPrivateEndpointId
     vnetRouteAllEnabled: true
     resourceBaseName: baseName
     azureFunctionAppName: azureFunctionAppName
@@ -122,59 +124,6 @@ resource additionalAppSettings 'Microsoft.Web/sites/config@2021-01-15' = {
     APPINSIGHTS_INSTRUMENTATIONKEY: '@Microsoft.KeyVault(SecretUri=${appInsightsInstrumentationKeyKeyVaultSecret.properties.secretUriWithVersion})'
     FUNCTIONS_EXTENSION_VERSION: '~3'
     FUNCTIONS_WORKER_RUNTIME: 'dotnet'
-  }
-}
-
-resource functionPrivateEndpoint 'Microsoft.Network/privateEndpoints@2021-02-01' = {
-  name: 'pe-${baseName}-sites'
-  location: location
-  properties: {
-    subnet: {
-      id: network.outputs.subnetPrivateEndpointId
-    }
-    privateLinkServiceConnections: [
-      {
-        name: 'plsc-${baseName}-sites'
-        properties: {
-          privateLinkServiceId: azureFunction.outputs.azureFunctionId
-          groupIds: [
-            'sites'
-          ]
-        }
-      }
-    ]
-  }
-}
-
-resource functionPrivateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
-  name: 'privatelink.azurewebsites.net'
-  location: 'global'
-}
-
-resource functionPrivateDnsZoneLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = {
-  parent: functionPrivateDnsZone
-  name: '${functionPrivateDnsZone.name}-link'
-  location: 'global'
-  properties: {
-    registrationEnabled: false
-    virtualNetwork: {
-      id: network.outputs.virtualNetworkId
-    }
-  }
-}
-
-resource functionPrivateDnsZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2021-02-01' = {
-  parent: functionPrivateEndpoint
-  name: 'functionPrivateDnsZoneGroup'
-  properties: {
-    privateDnsZoneConfigs: [
-      {
-        name: 'config'
-        properties: {
-          privateDnsZoneId: functionPrivateDnsZone.id
-        }
-      }
-    ]
   }
 }
 
