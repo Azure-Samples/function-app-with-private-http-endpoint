@@ -50,6 +50,8 @@ Enabling Private Endpoints on a Function App also makes the Source Control Manag
 1. Navigate to the [./scripts](./scripts) directory.
 2. Deploy the code to the function app provisioned by Bicep or Terraform - `./deploy-azure-functions-code.sh <SUBSCRIPTION_ID> <RESOURCE_GROUP_NAME> <FUNCTION_APP_NAME>`
 
+_Note: The script assumes the `zip` package is installed on the local machine._
+
 ### Test the Function App
 
 1. Open Powershell on the local machine.
