@@ -45,7 +45,7 @@ The project can be deployed using _either_ Bicep _or_ Terraform.
 
 ### Deploy the Function App Code
 
-Enabling Private Endpoints on a Function App also makes the Source Control Manager (SCM) site publicly inaccessible. The project is equipped with a script that utilizes zip deploy for Azure Functions for quick, local deployment purposes. The script deploys a separate Azure Storage account, zips up the Function App source code and pushes it to an Azure Storage container, and adds the `WEBSITE_RUN_FROM_PACKAGE` application setting to the Function App that points to the zip file. In an environment with dedicated pipelines, use self-hosted agents that are deployed into a subnet on the virtual network.
+Enabling Private Endpoints on a Function App also makes the Source Control Manager (SCM) site publicly inaccessible. As a result, publishing code from a local machine via the SCM endpoint is not possible as the endpoint is restricted for use from within the virtual network. The project is equipped with a script that utilizes zip deploy for Azure Functions for quick, local deployment purposes. The script deploys a separate Azure Storage account, zips up the Function App source code and pushes it to an Azure Storage container, and adds the `WEBSITE_RUN_FROM_PACKAGE` application setting to the Function App that points to the zip file. In an environment with dedicated pipelines, use self-hosted agents that are deployed into a subnet on the virtual network.
 
 1. Navigate to the [./scripts](./scripts) directory.
 2. Deploy the code to the function app provisioned by Bicep or Terraform - `./deploy-azure-functions-code.sh <SUBSCRIPTION_ID> <RESOURCE_GROUP_NAME> <FUNCTION_APP_NAME>`
