@@ -38,5 +38,5 @@ variable "azurerm_network_interface_name" {
 
 variable "azurerm_network_interface_subnet_id" {
   type        = string
-  description = "The ID of the virutal network subnet where this NIC should be located in."
+  description = "The ID of the virtual network subnet where this NIC should be located in."
 }

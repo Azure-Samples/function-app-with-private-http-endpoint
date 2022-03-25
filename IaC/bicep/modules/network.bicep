@@ -17,10 +17,10 @@ param subnetAppServiceIntName string
 @description('The name of the virtual network subnet to be used for private endpoints.')
 param subnetPrivateEndpointName string
 
-@description('The virtual network IP space to use for the new virutal network.')
+@description('The virtual network IP space to use for the new virtual network.')
 param vnetAddressPrefix string = '10.0.0.0/16'
 
-@description('The IP space to use for the AzureBastionSubnet subnet.')
+@description('The IP space to use for the subnet for Azure Bastion.')
 param bastionSubnetIpPrefix string = '10.0.1.0/24'
 
 @description('The IP space to use for the subnet containing the virtual machine(s).')
