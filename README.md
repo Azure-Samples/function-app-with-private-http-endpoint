@@ -1,4 +1,4 @@
-# Function App With Private HTTP Endpoint
+# Function App with Private HTTP Endpoint
 
 Private endpoints for Azure Functions enable access to a Function App within a specified virtual network and restrict public internet access to it. Only clients which are connected to the virtual network are able to access the Function App. HTTP requests that originate from outside the virtual network address space are unable to reach the Function App.
 
@@ -55,14 +55,14 @@ _Note: The script assumes the `zip` package is installed on the local machine._
 ### Test the Function App
 
 1. Open Powershell on the local machine.
-1. Make a GET request to the HTTP triggered Azure Function - `curl https://<FUNCTION_APP_NAME>.azurewebsites.net/api/HttpRequestProcessor`
-1. Observe a DNS error.
-1. Navigate to the [Azure Portal](https://portal.azure.com) and find the Virtual Machine that was provisioned.
-1. Open the **Connect** blade and select **Bastion**.
-1. Input the admin username and password used in the infrastructure deployment and **Connect**.
-1. Open Powershell in the Bastion window.
-1. Make a GET request to the HTTP triggered Azure Function - `curl https://<FUNCTION_APP_NAME>.azurewebsites.net/api/HttpRequestProcessor`
-1. Observe a 200 response.
+2. Make a GET request to the HTTP triggered Azure Function - `curl https://<FUNCTION_APP_NAME>.azurewebsites.net/api/HttpRequestProcessor`
+3. Observe a DNS error.
+4. Navigate to the [Azure Portal](https://portal.azure.com) and find the Virtual Machine that was provisioned.
+5. Open the **Connect** blade and select **Bastion**.
+6. Input the admin username and password used in the infrastructure deployment and **Connect**.
+7. Open Powershell in the Bastion window.
+8. Make a GET request to the HTTP triggered Azure Function - `curl https://<FUNCTION_APP_NAME>.azurewebsites.net/api/HttpRequestProcessor`
+9. Observe a 200 response.
 
 ## Resources
 

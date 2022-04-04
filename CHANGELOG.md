@@ -1,4 +1,4 @@
-## Function App With Private HTTP Endpoint Changelog
+## Function App with Private HTTP Endpoint Changelog
 
 <a name="2022.03.22"></a>
 # 2022.03.22 (2022-03-22)
