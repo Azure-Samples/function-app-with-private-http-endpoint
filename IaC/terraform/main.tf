@@ -59,7 +59,7 @@ module "bastion" {
   azurerm_public_ip_name         = "pip-${local.base_name}"
 }
 
-module "windows-vm" {
+module "windows_vm" {
   source                                         = "./modules/virtual-machine/"
   resource_group_name                            = azurerm_resource_group.rg.name
   location                                       = var.location
@@ -70,7 +70,7 @@ module "windows-vm" {
   azurerm_windows_virtual_machine_admin_username = var.azurerm_windows_virtual_machine_admin_username
 }
 
-module "app-insights" {
+module "app_insights" {
   source                               = "./modules/application-insights"
   resource_group_name                  = azurerm_resource_group.rg.name
   location                             = var.location
@@ -78,7 +78,7 @@ module "app-insights" {
   azurerm_log_analytics_workspace_name = "log-${local.base_name}"
 }
 
-module "private-storage-account" {
+module "private_storage_account" {
   source                                                         = "./modules/private-storage-account/"
   resource_group_name                                            = azurerm_resource_group.rg.name
   location                                                       = var.location
@@ -90,22 +90,22 @@ module "private-storage-account" {
   azurerm_private_endpoint_storage_table_name                    = "pe-${local.base_name}-stt"
   azurerm_private_endpoint_storage_endpoint_subnet_id            = module.vnet.network_details.private_endpoint_subnet_id
   azurerm_private_endpoint_storage_table_service_connection_name = "st-table-private-service-connection"
-  azurerm_private_endpoint_storage_file_service_connection_name  = "st-file-private-service_connection"
+  azurerm_private_endpoint_storage_file_service_connection_name  = "st-file-private-service-connection"
   azurerm_private_endpoint_storage_queue_service_connection_name = "st-queue-private-service-connection"
   azurerm_private_endpoint_storage_blob_service_connection_name  = "st-blob-private-service-connection"
 }
 
-module "function-app" {
+module "function_app" {
   source                                                         = "./modules/azure-functions"
   resource_group_name                                            = azurerm_resource_group.rg.name
   location                                                       = var.location
   azurerm_app_service_plan_name                                  = "plan-${local.base_name}"
   azurerm_app_service_virtual_network_swift_connection_subnet_id = module.vnet.network_details.app_service_integration_subnet_id
   azurerm_function_app_name                                      = "func-${local.base_name}"
-  azurerm_function_app_storage_account_name                      = module.private-storage-account.storage_account_details.name
-  azurerm_function_app_storage_account_access_key                = module.private-storage-account.storage_account_details.primary_access_key
-  azurerm_function_app_website_content_share                     = module.private-storage-account.storage_account_details.file_share_name
-  azurerm_function_app_appinsights_instrumentation_key           = "@Microsoft.KeyVault(VaultName=${module.private-key-vault.key_vault_name};SecretName=kvs-${local.base_name}-aikey)"
+  azurerm_function_app_storage_account_name                      = module.private_storage_account.storage_account_details.name
+  azurerm_function_app_storage_account_access_key                = module.private_storage_account.storage_account_details.primary_access_key
+  azurerm_function_app_website_content_share                     = module.private_storage_account.storage_account_details.file_share_name
+  azurerm_function_app_appinsights_instrumentation_key           = "@Microsoft.KeyVault(VaultName=${module.private_key_vault.key_vault_name};SecretName=kvs-${local.base_name}-aikey)"
   azurerm_function_app_app_settings                              = {}
   azurerm_private_dns_zone_virtual_network_id                    = module.vnet.network_details.vnet_id
   azurerm_private_endpoint_sites_private_endpoint_subnet_id      = module.vnet.network_details.private_endpoint_subnet_id
@@ -114,7 +114,7 @@ module "function-app" {
   linux_fx_version                                               = "DOTNETCORE|3.1"
 }
 
-module "private-key-vault" {
+module "private_key_vault" {
   source                                                               = "./modules/private-key-vault"
   resource_group_name                                                  = azurerm_resource_group.rg.name
   location                                                             = var.location
@@ -125,28 +125,28 @@ module "private-key-vault" {
   azurerm_private_dns_zone_virtual_network_id                          = module.vnet.network_details.vnet_id
 }
 
-resource "azurerm_storage_account_network_rules" "st-network-rules" {
-  storage_account_id = module.private-storage-account.storage_account_details.id
+resource "azurerm_storage_account_network_rules" "st_network_rules" {
+  storage_account_id = module.private_storage_account.storage_account_details.id
   default_action     = "Deny"
   bypass             = ["None"]
 
   depends_on = [
-    module.private-storage-account,
-    module.function-app
+    module.private_storage_account,
+    module.function_app
   ]
 }
 
-resource "azurerm_key_vault_access_policy" "kv-func-access-policy" {
-  key_vault_id = module.private-key-vault.key_vault_id
-  tenant_id    = module.function-app.azure_function_tenant_id
-  object_id    = module.function-app.azure_function_principal_id
+resource "azurerm_key_vault_access_policy" "kv_func_access_policy" {
+  key_vault_id = module.private_key_vault.key_vault_id
+  tenant_id    = module.function_app.azure_function_tenant_id
+  object_id    = module.function_app.azure_function_principal_id
   secret_permissions = [
     "get",
   ]
 }
 
-resource "azurerm_key_vault_secret" "appi-instrumentation-key" {
+resource "azurerm_key_vault_secret" "appi_instrumentation_key" {
   name         = "kvs-${local.base_name}-aikey"
-  value        = module.app-insights.instrumentation_key
-  key_vault_id = module.private-key-vault.key_vault_id
+  value        = module.app_insights.instrumentation_key
+  key_vault_id = module.private_key_vault.key_vault_id
 }

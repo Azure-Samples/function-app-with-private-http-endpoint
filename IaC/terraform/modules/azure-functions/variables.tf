@@ -73,5 +73,5 @@ variable "azurerm_private_dns_zone_virtual_network_id" {
 
 variable "azurerm_private_endpoint_sites_name" {
   type        = string
-  description = "The name for the Azure Function's private endpoint for the queue resource."
+  description = "The name for the Azure Function's private endpoint."
 }

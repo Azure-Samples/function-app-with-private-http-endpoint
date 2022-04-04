@@ -167,29 +167,21 @@ resource "azurerm_subnet" "bastion" {
   # Azure Bastion requires the subnet to be named "AzureBastionSubnet".
   name                 = "AzureBastionSubnet"
   resource_group_name  = var.resource_group_name
-  virtual_network_name = var.azurerm_virtual_network_name
+  virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = [var.azurerm_subnet_bastion_address_prefixes]
-
-  depends_on = [
-    azurerm_virtual_network.vnet
-  ]
 }
 
 resource "azurerm_subnet" "vm" {
   name                 = var.azurerm_subnet_vm_subnet_name
   resource_group_name  = var.resource_group_name
-  virtual_network_name = var.azurerm_virtual_network_name
+  virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = [var.azurerm_subnet_vm_address_prefixes]
-
-  depends_on = [
-    azurerm_virtual_network.vnet
-  ]
 }
 
-resource "azurerm_subnet" "app-service-integration" {
+resource "azurerm_subnet" "app_service_integration" {
   name                 = var.azurerm_subnet_app_service_integration_subnet_name
   resource_group_name  = var.resource_group_name
-  virtual_network_name = var.azurerm_virtual_network_name
+  virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = [var.azurerm_subnet_app_service_integration_address_prefixes]
   service_endpoints    = var.azurerm_subnet_app_service_integration_service_endpoints
 
@@ -201,41 +193,32 @@ resource "azurerm_subnet" "app-service-integration" {
       actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
     }
   }
-
-  depends_on = [
-    azurerm_virtual_network.vnet
-  ]
 }
 
-resource "azurerm_subnet" "private-endpoints" {
+resource "azurerm_subnet" "private_endpoints" {
   name                                           = var.azurerm_subnet_private_endpoints_name
   resource_group_name                            = var.resource_group_name
-  virtual_network_name                           = var.azurerm_virtual_network_name
+  virtual_network_name                           = azurerm_virtual_network.vnet.name
   address_prefixes                               = [var.azurerm_subnet_private_endpoints_address_prefixes]
   enforce_private_link_endpoint_network_policies = true
-
-  depends_on = [
-    azurerm_virtual_network.vnet
-  ]
-
 }
 
-resource "azurerm_subnet_network_security_group_association" "nsg-block-rdp" {
+resource "azurerm_subnet_network_security_group_association" "nsg_block_rdp" {
   subnet_id                 = azurerm_subnet.vm.id
   network_security_group_id = azurerm_network_security_group.nsg.id
 }
 
-resource "azurerm_subnet_network_security_group_association" "nsg-private-endpoints" {
-  subnet_id                 = azurerm_subnet.private-endpoints.id
+resource "azurerm_subnet_network_security_group_association" "nsg_private_endpoints" {
+  subnet_id                 = azurerm_subnet.private_endpoints.id
   network_security_group_id = azurerm_network_security_group.private_endpoint_nsg.id
 }
 
-resource "azurerm_subnet_network_security_group_association" "nsg-app-service-integration" {
-  subnet_id                 = azurerm_subnet.app-service-integration.id
+resource "azurerm_subnet_network_security_group_association" "nsg_app_service_integration" {
+  subnet_id                 = azurerm_subnet.app_service_integration.id
   network_security_group_id = azurerm_network_security_group.app_service_integration_nsg.id
 }
 
-resource "azurerm_subnet_network_security_group_association" "nsg-bastion" {
+resource "azurerm_subnet_network_security_group_association" "nsg_bastion" {
   subnet_id                 = azurerm_subnet.bastion.id
   network_security_group_id = azurerm_network_security_group.azure_bastion_nsg.id
 

@@ -41,19 +41,19 @@ resource "azurerm_key_vault" "kv" {
     ]
   }
 }
-resource "azurerm_private_dns_zone" "kv-private-link" {
+resource "azurerm_private_dns_zone" "kv_private_link" {
   name                = "privatelink.vaultcore.azure.net"
   resource_group_name = var.resource_group_name
 }
 
-resource "azurerm_private_dns_zone_virtual_network_link" "kv-private-link" {
+resource "azurerm_private_dns_zone_virtual_network_link" "kv_private_link" {
   name                  = "keyvault_privatelink"
   resource_group_name   = var.resource_group_name
-  private_dns_zone_name = azurerm_private_dns_zone.kv-private-link.name
+  private_dns_zone_name = azurerm_private_dns_zone.kv_private_link.name
   virtual_network_id    = var.azurerm_private_dns_zone_virtual_network_id
 }
 
-resource "azurerm_private_endpoint" "kv-private-endpoint" {
+resource "azurerm_private_endpoint" "kv_private_endpoint" {
   name                = var.azurerm_private_endpoint_kv_private_endpoint_name
   resource_group_name = var.resource_group_name
   location            = var.location
@@ -68,6 +68,6 @@ resource "azurerm_private_endpoint" "kv-private-endpoint" {
 
   private_dns_zone_group {
     name                 = "keyvault-private-dns-zone-group"
-    private_dns_zone_ids = [azurerm_private_dns_zone.kv-private-link.id]
+    private_dns_zone_ids = [azurerm_private_dns_zone.kv_private_link.id]
   }
 }

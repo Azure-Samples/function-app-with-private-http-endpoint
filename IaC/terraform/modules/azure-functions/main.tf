@@ -48,24 +48,24 @@ resource "azurerm_function_app" "func" {
   }
 }
 
-resource "azurerm_app_service_virtual_network_swift_connection" "fn-vnet-swift" {
+resource "azurerm_app_service_virtual_network_swift_connection" "fn_vnet_swift" {
   app_service_id = azurerm_function_app.func.id
   subnet_id      = var.azurerm_app_service_virtual_network_swift_connection_subnet_id
 }
 
-resource "azurerm_private_dns_zone" "sites-private-link" {
+resource "azurerm_private_dns_zone" "sites_private_link" {
   name                = "privatelink.azurewebsites.net"
   resource_group_name = var.resource_group_name
 }
 
-resource "azurerm_private_dns_zone_virtual_network_link" "sites-private-link" {
+resource "azurerm_private_dns_zone_virtual_network_link" "sites_private_link" {
   name                  = "azurewebsites_privatelink"
   resource_group_name   = var.resource_group_name
-  private_dns_zone_name = azurerm_private_dns_zone.sites-private-link.name
+  private_dns_zone_name = azurerm_private_dns_zone.sites_private_link.name
   virtual_network_id    = var.azurerm_private_dns_zone_virtual_network_id
 }
 
-resource "azurerm_private_endpoint" "sites-private-endpoint" {
+resource "azurerm_private_endpoint" "sites_private_endpoint" {
   name                = var.azurerm_private_endpoint_sites_name
   resource_group_name = var.resource_group_name
   location            = var.location
@@ -80,7 +80,7 @@ resource "azurerm_private_endpoint" "sites-private-endpoint" {
 
   private_dns_zone_group {
     name                 = "sites-private-dns-zone-group"
-    private_dns_zone_ids = [azurerm_private_dns_zone.sites-private-link.id]
+    private_dns_zone_ids = [azurerm_private_dns_zone.sites_private_link.id]
   }
 }
 
