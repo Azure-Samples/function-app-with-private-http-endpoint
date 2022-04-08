@@ -6,6 +6,8 @@
 # Terraform
 .terraform*
 *.tfstate
+
+# Zip
 *.zip
 
 # User-specific files
