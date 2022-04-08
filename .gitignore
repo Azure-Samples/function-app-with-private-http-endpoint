@@ -6,6 +6,7 @@
 # Terraform
 .terraform*
 *.tfstate
+*.zip
 
 # User-specific files
 *.rsuser
