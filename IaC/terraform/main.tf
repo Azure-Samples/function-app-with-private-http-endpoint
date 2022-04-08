@@ -7,7 +7,7 @@ terraform {
     }
   }
 
-  required_version = "0.15.5"
+  required_version = "1.1.8"
 }
 
 provider "azurerm" {
@@ -106,12 +106,9 @@ module "function_app" {
   azurerm_function_app_storage_account_access_key                = module.private_storage_account.storage_account_details.primary_access_key
   azurerm_function_app_website_content_share                     = module.private_storage_account.storage_account_details.file_share_name
   azurerm_function_app_appinsights_instrumentation_key           = "@Microsoft.KeyVault(VaultName=${module.private_key_vault.key_vault_name};SecretName=kvs-${local.base_name}-aikey)"
-  azurerm_function_app_app_settings                              = {}
   azurerm_private_dns_zone_virtual_network_id                    = module.vnet.network_details.vnet_id
   azurerm_private_endpoint_sites_private_endpoint_subnet_id      = module.vnet.network_details.private_endpoint_subnet_id
   azurerm_private_endpoint_sites_name                            = "pe-${local.base_name}-sites"
-  functions_worker_runtime                                       = "dotnet"
-  linux_fx_version                                               = "DOTNETCORE|3.1"
 }
 
 module "private_key_vault" {

@@ -17,6 +17,7 @@ variable "linux_fx_version" {
 variable "functions_worker_runtime" {
   type        = string
   description = "The language worker runtime to load in the function app."
+  default     = "dotnet"
 }
 
 variable "azurerm_app_service_plan_name" {
@@ -54,11 +55,6 @@ variable "azurerm_function_app_website_content_share" {
 variable "azurerm_app_service_virtual_network_swift_connection_subnet_id" {
   type        = string
   description = "The ID for the virtual network subnet used for virtual network integration."
-}
-
-variable "azurerm_function_app_app_settings" {
-  type        = map(string)
-  description = "Collection of additional application settings used by the function app."
 }
 
 variable "azurerm_private_endpoint_sites_private_endpoint_subnet_id" {

@@ -27,13 +27,12 @@ resource "azurerm_function_app" "func" {
   version                    = "~3"
   enable_builtin_logging     = false
   os_type                    = "linux"
-  app_settings               = merge(local.app_settings, var.azurerm_function_app_app_settings)
+  app_settings               = local.app_settings
 
   site_config {
     pre_warmed_instance_count        = 1
     linux_fx_version                 = var.linux_fx_version
     runtime_scale_monitoring_enabled = true
-    vnet_route_all_enabled           = true
     ftps_state                       = "Disabled"
   }
 
@@ -84,9 +83,8 @@ resource "azurerm_private_endpoint" "sites_private_endpoint" {
   }
 }
 
-
 locals {
-  # terraform auto provisions AzureWebJobsStorage and WEBSITE_CONTENTAZUREFILECONNECTIONSTRING, which cannot be overridden
+  # terraform auto provisions AzureWebJobsStorage, WEBSITE_CONTENTSHARE, and WEBSITE_CONTENTAZUREFILECONNECTIONSTRING, which cannot be overridden
   app_settings = {
     FUNCTIONS_WORKER_RUNTIME       = var.functions_worker_runtime
     APPINSIGHTS_INSTRUMENTATIONKEY = var.azurerm_function_app_appinsights_instrumentation_key

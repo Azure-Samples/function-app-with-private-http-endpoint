@@ -106,10 +106,9 @@ module azureFunction './modules/azure-functions.bicep' = {
     virtualNetworkId: network.outputs.virtualNetworkId
     subnetAppServiceIntegrationId: network.outputs.subnetAppServiceIntId
     subnetPrivateEndpointId: network.outputs.subnetPrivateEndpointId
-    vnetRouteAllEnabled: true
+    vnetRouteAllEnabled: false
     resourceBaseName: baseName
     azureFunctionAppName: azureFunctionAppName
-    linuxRuntime: 'DOTNETCORE|3.1'
   }
 }
 
