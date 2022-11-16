@@ -196,11 +196,11 @@ resource "azurerm_subnet" "app_service_integration" {
 }
 
 resource "azurerm_subnet" "private_endpoints" {
-  name                                           = var.azurerm_subnet_private_endpoints_name
-  resource_group_name                            = var.resource_group_name
-  virtual_network_name                           = azurerm_virtual_network.vnet.name
-  address_prefixes                               = [var.azurerm_subnet_private_endpoints_address_prefixes]
-  enforce_private_link_endpoint_network_policies = true
+  name                                      = var.azurerm_subnet_private_endpoints_name
+  resource_group_name                       = var.resource_group_name
+  virtual_network_name                      = azurerm_virtual_network.vnet.name
+  address_prefixes                          = [var.azurerm_subnet_private_endpoints_address_prefixes]
+  private_endpoint_network_policies_enabled = true
 }
 
 resource "azurerm_subnet_network_security_group_association" "nsg_block_rdp" {

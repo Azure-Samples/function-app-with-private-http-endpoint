@@ -8,18 +8,6 @@ variable "location" {
   description = "The Azure region for the specified resources."
 }
 
-variable "linux_fx_version" {
-  type        = string
-  description = "Linux App Framework and version for the App Service."
-  default     = "DOTNETCORE|3.1"
-}
-
-variable "functions_worker_runtime" {
-  type        = string
-  description = "The language worker runtime to load in the function app."
-  default     = "dotnet"
-}
-
 variable "azurerm_app_service_plan_name" {
   type        = string
   description = "The name of the App Service plan."
@@ -30,20 +18,19 @@ variable "azurerm_function_app_name" {
   description = "The name of the function app."
 }
 
-variable "azurerm_function_app_storage_account_name" {
+variable "azurerm_function_app_storage_key_vault_id" {
   type        = string
-  description = "The Azure storage account name which will be used by the function app."
+  description = "Id for the Key Vault secret containing the Azure Storage connection string to be used by the Azure Function."
 }
 
-variable "azurerm_function_app_storage_account_access_key" {
+variable "azurerm_function_app_identity_id" {
   type        = string
-  description = "The access key which will be used to access the Azure storage account for the function app."
-  sensitive   = true
+  description = "Id for the managed identity used by the Azure Function."
 }
 
-variable "azurerm_function_app_appinsights_instrumentation_key" {
+variable "azurerm_function_app_application_insights_connection_string" {
   type        = string
-  description = "The Application Insights instrumentation key used by the function app."
+  description = "The Application Insights connection string used by the function app."
   sensitive   = true
 }
 

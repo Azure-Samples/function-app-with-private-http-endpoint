@@ -11,6 +11,7 @@ resource "azurerm_storage_account" "st" {
 resource "azurerm_storage_share" "st_share" {
   name                 = var.azurerm_storage_share_name
   storage_account_name = azurerm_storage_account.st.name
+  quota                = 5120
 }
 
 resource "azurerm_private_dns_zone" "blob_privatelink" {

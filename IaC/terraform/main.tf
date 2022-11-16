@@ -3,34 +3,47 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "= 2.78.0"
+      version = "= 3.30.0"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "3.4.3"
     }
   }
 
-  required_version = "1.1.8"
+  required_version = "1.3.4"
 }
 
 provider "azurerm" {
   features {}
 }
 
+provider "random" {}
+
 locals {
   base_name = random_string.base_name.result
 }
 
+data "azurerm_client_config" "current" {}
+
 resource "random_string" "base_name" {
   length  = 13
   special = false
-  number  = true
+  numeric = true
   upper   = false
   keepers = {
     resource_group = var.resource_group_name
   }
 }
-
 resource "azurerm_resource_group" "rg" {
   name     = var.resource_group_name
   location = var.location
+}
+
+resource "azurerm_user_assigned_identity" "funcid" {
+  name                = "id-${local.base_name}"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
 }
 
 module "vnet" {
@@ -102,10 +115,10 @@ module "function_app" {
   azurerm_app_service_plan_name                                  = "plan-${local.base_name}"
   azurerm_app_service_virtual_network_swift_connection_subnet_id = module.vnet.network_details.app_service_integration_subnet_id
   azurerm_function_app_name                                      = "func-${local.base_name}"
-  azurerm_function_app_storage_account_name                      = module.private_storage_account.storage_account_details.name
-  azurerm_function_app_storage_account_access_key                = module.private_storage_account.storage_account_details.primary_access_key
+  azurerm_function_app_application_insights_connection_string    = module.app_insights.azurerm_application_insights_connection_string
+  azurerm_function_app_storage_key_vault_id                      = azurerm_key_vault_secret.storage-connection-string.id
+  azurerm_function_app_identity_id                               = azurerm_user_assigned_identity.funcid.id
   azurerm_function_app_website_content_share                     = module.private_storage_account.storage_account_details.file_share_name
-  azurerm_function_app_appinsights_instrumentation_key           = "@Microsoft.KeyVault(VaultName=${module.private_key_vault.key_vault_name};SecretName=kvs-${local.base_name}-aikey)"
   azurerm_private_dns_zone_virtual_network_id                    = module.vnet.network_details.vnet_id
   azurerm_private_endpoint_sites_private_endpoint_subnet_id      = module.vnet.network_details.private_endpoint_subnet_id
   azurerm_private_endpoint_sites_name                            = "pe-${local.base_name}-sites"
@@ -135,15 +148,15 @@ resource "azurerm_storage_account_network_rules" "st_network_rules" {
 
 resource "azurerm_key_vault_access_policy" "kv_func_access_policy" {
   key_vault_id = module.private_key_vault.key_vault_id
-  tenant_id    = module.function_app.azure_function_tenant_id
-  object_id    = module.function_app.azure_function_principal_id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  object_id    = azurerm_user_assigned_identity.funcid.principal_id
   secret_permissions = [
-    "get",
+    "Get"
   ]
 }
 
-resource "azurerm_key_vault_secret" "appi_instrumentation_key" {
-  name         = "kvs-${local.base_name}-aikey"
-  value        = module.app_insights.instrumentation_key
+resource "azurerm_key_vault_secret" "storage-connection-string" {
+  name         = "kvs-${local.base_name}-stconn"
+  value        = module.private_storage_account.storage_account_details.primary_connection_string
   key_vault_id = module.private_key_vault.key_vault_id
 }

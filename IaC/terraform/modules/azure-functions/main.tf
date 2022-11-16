@@ -1,54 +1,48 @@
-resource "azurerm_app_service_plan" "plan" {
+resource "azurerm_service_plan" "plan" {
   name                = var.azurerm_app_service_plan_name
   resource_group_name = var.resource_group_name
   location            = var.location
-  reserved            = true
-  kind                = "Linux"
-
-  sku {
-    tier = "ElasticPremium"
-    size = "EP1"
-  }
-
-  lifecycle {
-    ignore_changes = [
-      kind
-    ]
-  }
+  sku_name            = "EP1"
+  os_type             = "Linux"
 }
 
-resource "azurerm_function_app" "func" {
-  name                       = var.azurerm_function_app_name
-  resource_group_name        = var.resource_group_name
-  location                   = var.location
-  app_service_plan_id        = azurerm_app_service_plan.plan.id
-  storage_account_name       = var.azurerm_function_app_storage_account_name
-  storage_account_access_key = var.azurerm_function_app_storage_account_access_key
-  version                    = "~3"
-  enable_builtin_logging     = false
-  os_type                    = "linux"
-  app_settings               = local.app_settings
+resource "azurerm_linux_function_app" "func" {
+  name                = var.azurerm_function_app_name
+  resource_group_name = var.resource_group_name
+  location            = var.location
 
-  site_config {
-    pre_warmed_instance_count        = 1
-    linux_fx_version                 = var.linux_fx_version
-    runtime_scale_monitoring_enabled = true
-    ftps_state                       = "Disabled"
-  }
+  service_plan_id                 = azurerm_service_plan.plan.id
+  storage_key_vault_secret_id     = var.azurerm_function_app_storage_key_vault_id
+  key_vault_reference_identity_id = var.azurerm_function_app_identity_id
+  functions_extension_version     = "~3"
+  builtin_logging_enabled         = false
 
   identity {
-    type = "SystemAssigned"
+    type         = "UserAssigned"
+    identity_ids = [var.azurerm_function_app_identity_id]
   }
 
-  lifecycle {
-    ignore_changes = [
-      app_settings
-    ]
+  site_config {
+    runtime_scale_monitoring_enabled = true
+    vnet_route_all_enabled           = true
+    ftps_state                       = "Disabled"
+
+    application_insights_connection_string = var.azurerm_function_app_application_insights_connection_string
+
+    application_stack {
+      dotnet_version = "3.1"
+    }
+  }
+
+  app_settings = {
+    WEBSITE_CONTENTOVERVNET              = 1
+    WEBSITE_CONTENTSHARE                 = var.azurerm_function_app_website_content_share
+    WEBSITE_SKIP_CONTENTSHARE_VALIDATION = 1
   }
 }
 
 resource "azurerm_app_service_virtual_network_swift_connection" "fn_vnet_swift" {
-  app_service_id = azurerm_function_app.func.id
+  app_service_id = azurerm_linux_function_app.func.id
   subnet_id      = var.azurerm_app_service_virtual_network_swift_connection_subnet_id
 }
 
@@ -72,7 +66,7 @@ resource "azurerm_private_endpoint" "sites_private_endpoint" {
 
   private_service_connection {
     name                           = "azurewebsites-private-service-connection"
-    private_connection_resource_id = azurerm_function_app.func.id
+    private_connection_resource_id = azurerm_linux_function_app.func.id
     subresource_names              = ["sites"]
     is_manual_connection           = false
   }
@@ -80,13 +74,5 @@ resource "azurerm_private_endpoint" "sites_private_endpoint" {
   private_dns_zone_group {
     name                 = "sites-private-dns-zone-group"
     private_dns_zone_ids = [azurerm_private_dns_zone.sites_private_link.id]
-  }
-}
-
-locals {
-  # terraform auto provisions AzureWebJobsStorage, WEBSITE_CONTENTSHARE, and WEBSITE_CONTENTAZUREFILECONNECTIONSTRING, which cannot be overridden
-  app_settings = {
-    FUNCTIONS_WORKER_RUNTIME       = var.functions_worker_runtime
-    APPINSIGHTS_INSTRUMENTATIONKEY = var.azurerm_function_app_appinsights_instrumentation_key
   }
 }
