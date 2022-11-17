@@ -20,7 +20,7 @@ This project framework provides the following features:
 
 ### Prerequisites
 
-* [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli)
+* [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli) (2.42.0)
 * [Azure Functions Core Tools](https://docs.microsoft.com/azure/azure-functions/functions-run-local?tabs=windows%2Ccsharp%2Cbash#install-the-azure-functions-core-tools)
 * [.NET](https://docs.microsoft.com/dotnet/core/install/)
 * [Bicep](https://docs.microsoft.com/azure/azure-resource-manager/bicep/install) or [Terraform](https://www.terraform.io/downloads.html)
