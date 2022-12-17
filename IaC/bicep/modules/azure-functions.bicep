@@ -24,7 +24,7 @@ param subnetAppServiceIntegrationId string
 param subnetPrivateEndpointId string
 
 @description('The built-in runtime stack to be used for a Linux-based Azure Function. This value is ignore if a Windows-based Azure Function hosting plan is used. Get the full list by executing the "az webapp list-runtimes --linux" command.')
-param linuxRuntime string = 'DOTNETCORE|3.1'
+param linuxRuntime string = 'DOTNET|6.0'
 
 resource azureFunctionPlan 'Microsoft.Web/serverfarms@2021-01-01' = {
   name: 'plan-${resourceBaseName}'
@@ -57,7 +57,7 @@ resource azureFunction 'Microsoft.Web/sites@2020-12-01' = {
       appSettings: [
         {
           name: 'FUNCTIONS_EXTENSION_VERSION'
-          value: '~3'
+          value: '~4'
         }
       ]
     }

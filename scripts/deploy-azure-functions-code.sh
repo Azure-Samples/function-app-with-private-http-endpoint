@@ -47,7 +47,7 @@ cd ../src/http-trigger/ || exit
 dotnet publish --configuration Release
 
 # zip code
-cd ./bin/Release/netcoreapp3.1/publish || exit
+cd ./bin/Release/net6.0/publish || exit
 zip -r code.zip .
 
 # Copy the zipped file to the http-trigger folder.
