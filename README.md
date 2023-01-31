@@ -14,7 +14,7 @@ This project framework provides the following features:
 
 ## Architecture
 
-![Architecture diagram](./media/architectureDiagram.svg)
+![Architecture diagram](./media/privateHttp.architectureDiagram.png)
 
 ## Getting Started
 
